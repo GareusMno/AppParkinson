@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
                 BDatos.sql_CreateTable()
                 if (BDatos.sql_ComprobarUsuario(b,c)):
                     self.hide()
-                    exit()
+                    exit()  
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     mainWin = MainWindow()

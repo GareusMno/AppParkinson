@@ -10,6 +10,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import * 
 from pathlib import Path
 
+from main import BD
 sys.path.append( '.' )
 
 class MainWindow(QMainWindow):
@@ -19,6 +20,7 @@ class MainWindow(QMainWindow):
              2:'null',
     }
     def __init__(self, *args, **kwargs):
+        self.BDatos = BD.Base()
         self.lap=1
         self.comienzo = 0
         self.tiempo = 0
@@ -28,6 +30,7 @@ class MainWindow(QMainWindow):
         self.interfaz = uic.loadUi("ui/Cronometro.ui", self)
         self.interfaz.Start.pressed.connect(self.estadoBotonCronometro)
         self.interfaz.Reset.pressed.connect(self.Re_set)
+        self.interfaz.Guardar.pressed.connect(self.guardarTiempo)
         self.interfaz.nombre_paciente.setText(self.paciente)
         self.Cronometro.setFont(QFont('Arial', 25))
         # creating a timer object 
@@ -92,7 +95,8 @@ class MainWindow(QMainWindow):
         self.Tiempo_v_3.setText("")
         # setting text to label 
         self.Cronometro.setText(str(self.count)) 
-
+    def guardarTiempo(self):
+        self.BDatos.sql_GuardarPrueba(self.paciente,self.Cronometro.text())
     def showTime(self): 
         # checking if flag is true 
         if self.flag: 

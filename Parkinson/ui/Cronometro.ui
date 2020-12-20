@@ -409,7 +409,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="Guardar">
            <property name="maximumSize">
             <size>
              <width>280</width>
