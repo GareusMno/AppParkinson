@@ -10,6 +10,12 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
   <property name="maximumSize">
    <size>
     <width>800</width>
@@ -371,7 +377,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap>B:/Games/generatedtext_2.png</pixmap>
+        <pixmap>../img/Barc.png</pixmap>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

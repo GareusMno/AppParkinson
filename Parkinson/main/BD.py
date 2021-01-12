@@ -5,17 +5,25 @@ import os
 from sqlite3 import Error
 from pathlib import Path
 from dateutil import parser
-
 import matplotlib.pyplot as plt
 import datetime
 import numpy as np
+import pyqtgraph as pg
+from pyqtgraph import PlotWidget, plot
+from datetime import datetime
 import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
+from main import Cifrar
+lienzo = 0
+comprobado = 0
 # Clase de la base de datos que al crearla y anos ofrecerá la conexion
 # Con la base de datos y nos permitira acceder a todas las funciones
 # Relacionadas con la base de datos
+class TimeAxisItem(pg.AxisItem):
+    def tickStrings(self, values, scale, spacing):
+        return [datetime.fromtimestamp(value) for value in values]
 class Base(object):
     def __init__(self):
         self.con=""
@@ -29,30 +37,36 @@ class Base(object):
     # Función de crear tablas
     # Función que se ejecutará al principio y creará las tablas vacías
     # De la base de datos para que podamos trabajar con ellas
+    # E insertara el usuario por defecto root con contraseña root
     def sql_CreateTable(self):
         cursorObj = self.con.cursor()
 
         cursorObj.execute("CREATE TABLE Usuarios(usuario String PRIMARY KEY not null default root, password String not null default root);")
         cursorObj.execute('INSERT INTO Usuarios(usuario, password) VALUES("root", "dc76e9f0c0006e8f919e0c515c66dbba3982f785");')
         cursorObj.execute("CREATE TABLE Pacientes(codigo INTEGER PRIMARY KEY AUTOINCREMENT, paciente String not null, gravedad INTEGER ,edad INTEGER);")
-        cursorObj.execute('INSERT INTO Pacientes(paciente,gravedad,edad) VALUES("Pepe Garcia",1,25);')
-        cursorObj.execute("CREATE TABLE Pruebas(codigo DECIMAL PRIMARY KEY AUTOINCREMENT, paciente String not null, tiempo INTEGER ,fecha String);")
-        cursorObj.execute('INSERT INTO Pruebas(paciente,tiempo,fecha) VALUES("Pepe Garcia",67,"  23/1/2000");')
-        cursorObj.execute('INSERT INTO Pruebas(paciente,tiempo,fecha) VALUES("Pepe Garcia",43,"  23/2/2000");')
+        cursorObj.execute("CREATE TABLE Pruebas(codigo INTEGER PRIMARY KEY AUTOINCREMENT, paciente String not null, tiempo INTEGER ,fecha String, FOREIGN KEY(paciente) REFERENCES Pacientes(paciente) ON UPDATE CASCADE);")
         self.con.commit()
     # Función de insertar pacientes
     # Se ejecutará cuando queramos añadir nuevos pacientes
     # Nos pasarán los datos de cada paciente por parámetros y le haremos un insert a la base de datos
-    def sql_InsertarPaciente(self,paciente,gravedad):
+    def sql_InsertarPaciente(self,paciente,gravedad,edad):
         cursorObj = self.con.cursor()
-        cursorObj.execute('INSERT INTO Pacientes(paciente,gravedad) VALUES("'+paciente+'",'+gravedad+');')
+        cursorObj.execute('INSERT INTO Pacientes(paciente,gravedad,edad) VALUES("'+paciente+'",'+gravedad+','+edad+');')
+        self.con.commit()
+    # Función de eliminar pacientes
+    # Se ejecutará cuando queramos eliminar un paciente
+    # Le pasaran el nombre del paciente que se quiere eliminar
+    # Y se ejecutará la sentencia SQL
+    def sql_EliminarPaciente(self,paciente):
+        cursorObj = self.con.cursor()
+        cursorObj.execute('DELETE FROM Pacientes where paciente="'+paciente+'"')
         self.con.commit()
     # Función de actualizar pacientes
     # Se ejecutará cuando modifiquemos un paciente
     # Que hara un update según los datos actualizados que le serán pasados por parámetros
     def sql_ActualizarPaciente(self,paciente,gravedad,edad):
         cursorObj = self.con.cursor()
-        cursorObj.execute('UPDATE Pacientes SET (paciente="'+paciente+'",gravedad='+gravedad+'",edad='+edad+');')
+        cursorObj.execute("UPDATE Pacientes SET gravedad='"+gravedad+"',edad="+edad+" where paciente='"+paciente+"';")
         self.con.commit()
     # Función de comprobar usuario autentificado
     # Se le pasarán los datos del label y hará una consulta a la base de datos
@@ -75,7 +89,7 @@ class Base(object):
     # Función para comprobar la existencia de las tablas
     # Hace la petición a la base de datos con el nombre de las tablas
     # Nos servirá para poder comprobar si existen devolvendo un true o un false
-    def sql_ComprobarTabla(self,nombre):
+    def sql_ComprobarTabla(self):
         existencia = False
         cursorObj = self.con.cursor()
 
@@ -120,17 +134,29 @@ class Base(object):
     # E irá añadiendolos a una lista y le daremos los datos a la gráfica
     # La cual se la pasamos a la función y una vez tiene los datos
     # Los dibujamos
-    def sql_MostrarGrafica(self,grafica):
+    def sql_MostrarGrafica(self,grafica,nombre):
+        global comprobado
         cursorObj=self.con.cursor()
-        cursorObj.execute("SELECT fecha,tiempo FROM Pruebas")
-        data=cursorObj.fetchall()
-        dates = []
-        values = []
-        for row in data:
-            dates.append(row[0])
-            values.append((row[1]))
-        grafica.axes.plot(dates, values,"r")
-        grafica.draw()
+        cursorObj.execute("SELECT count(*) FROM Pruebas WHERE paciente='"+nombre+"'")
+        if cursorObj.fetchone()[0]>1 :
+            cursorObj.execute("SELECT fecha,tiempo FROM Pruebas where paciente='"+nombre+"'")
+            data=cursorObj.fetchall()
+            dates = []
+            values = []
+            for row in data:
+                dates.append((row[0]))
+                values.append((row[1]))
+            grafica.clear()
+            datesdict = dict(enumerate(dates))
+            stringaxis = pg.AxisItem(orientation="bottom")
+            stringaxis.setTicks([datesdict.items()])
+            plot = grafica.addPlot(axisItems={"bottom":stringaxis})
+            curve = plot.plot(list(datesdict.keys()),values)
+            global lienzo 
+            comprobado = 1
+            lienzo = plot
+        else:
+            comprobado = 0
     # Función para guardar los tiempos de la prueba
     # Se le pasará el nombre y el tiempo que ha tardado en realizar la prueba
     # Hará un insert a la base de datos con los datos y la fecha en la que se ha realizado el guardado
@@ -138,3 +164,18 @@ class Base(object):
         cursorObj = self.con.cursor()
         cursorObj.execute("INSERT INTO Pruebas(paciente,tiempo,fecha) VALUES('"+paciente+"',"+tiempo+",datetime('now','localtime'))")
         self.con.commit()
+    def sql_InsertarUsuario(self,nombre,contraseña):
+        cursorObj = self.con.cursor()
+        ccifrada = Cifrar.Cifrar().CifrarTexto(contraseña)
+        cursorObj.execute('INSERT INTO Usuarios(usuario,password) VALUES("'+nombre+'","'+ccifrada+'");')
+        self.con.commit()
+    def sql_ComprobarUsuarioDoctor(self):
+        existencia = False
+        cursorObj = self.con.cursor()
+
+        cursorObj.execute(''' SELECT count(usuario) FROM Usuarios ''')
+        if cursorObj.fetchone()[0]==1 :
+            existencia= True
+        else:
+            existencia= False
+        return existencia

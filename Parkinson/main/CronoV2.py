@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         self.count = 0
         self.flag = False
         super().__init__(*args, **kwargs)
-        self.interfaz = uic.loadUi("ui/Cronometro.ui", self)
+        self.interfaz = uic.loadUi("ui/CronometroReal.ui", self)
         self.interfaz.Start.pressed.connect(self.estadoBotonCronometro)
         self.interfaz.Reset.pressed.connect(self.Re_set)
         self.interfaz.Guardar.pressed.connect(self.guardarTiempo)
