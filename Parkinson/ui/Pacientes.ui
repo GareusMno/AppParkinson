@@ -10,6 +10,12 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
   <property name="maximumSize">
    <size>
     <width>800</width>
@@ -20,7 +26,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="AddPaciente">
+   <widget class="QPushButton" name="addPaciente">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -32,17 +38,11 @@
       <height>41</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <family>DejaVu Sans</family>
-      <pointsize>9</pointsize>
-     </font>
-    </property>
     <property name="text">
      <string>Añadir paciente</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="eliminar_paciente">
+   <widget class="QPushButton" name="eliminarPaciente">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -54,17 +54,11 @@
       <height>41</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <family>DejaVu Sans</family>
-      <pointsize>8</pointsize>
-     </font>
-    </property>
     <property name="text">
      <string>Eliminar paciente</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="modificar_paciente">
+   <widget class="QPushButton" name="modificarPaciente">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -76,17 +70,11 @@
       <height>41</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <family>DejaVu Sans</family>
-      <pointsize>8</pointsize>
-     </font>
-    </property>
     <property name="text">
      <string>Modificar paciente</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="prueba_crono">
+   <widget class="QPushButton" name="pruebaCrono">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -98,17 +86,11 @@
       <height>41</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <family>DejaVu Sans</family>
-      <pointsize>9</pointsize>
-     </font>
-    </property>
     <property name="text">
      <string>Realizar prueba</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="combo_pacientes">
+   <widget class="QComboBox" name="comboPacientes">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -116,6 +98,9 @@
       <width>781</width>
       <height>41</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(0, 0, 0);</string>
     </property>
     <item>
      <property name="text">
@@ -203,40 +188,33 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="lineEdit">
+          <widget class="QLineEdit" name="lePaciente">
            <property name="enabled">
             <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(0, 0, 0);</string>
            </property>
            <property name="text">
             <string/>
            </property>
           </widget>
          </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>DNI</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="lineEdit_2">
+          <widget class="QLineEdit" name="leDNI">
            <property name="enabled">
             <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Gravedad</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="lineEdit_3">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
             <string>Edad</string>
@@ -246,33 +224,84 @@
            </property>
           </widget>
          </item>
+         <item row="2" column="1">
+          <widget class="QSpinBox" name="sbEdad">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(0, 0, 0);</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Altura</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="leAltura">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Peso</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLineEdit" name="lePeso">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Gravedad</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLineEdit" name="leGravedad">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(0, 0, 0);</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuPacientes">
-    <property name="title">
-     <string>Pacientes</string>
+   <widget class="QPushButton" name="editarClasificacion">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>400</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
     </property>
-    <addaction name="actionA_adir"/>
-    <addaction name="actionModificar"/>
-    <addaction name="actionEliminar"/>
+    <property name="text">
+     <string>Editar clasificacion</string>
+    </property>
    </widget>
-   <addaction name="menuPacientes"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionA_adir">
    <property name="text">
     <string>Añadir</string>

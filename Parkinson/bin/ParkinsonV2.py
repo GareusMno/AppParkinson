@@ -2,18 +2,17 @@ import sys
 import os
 import sqlite3
 import hashlib
+import pathlib
 from pathlib import Path
-
 from PyQt5 import uic
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QProcess
 from PyQt5.QtWidgets import QWidget, QMainWindow, QApplication,QShortcut,QDialog,QLabel,QVBoxLayout,QMessageBox
 from PyQt5.QtGui import QKeySequence
-
-sys.path.append('.')
-from main import BD
-from main import Pacientes
-from main import PacientesPruebaGrafica2
-from main import addUser
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+from main import BD,Pacientes,PacientesPruebaGrafica2,addUser
 # Clase principal de la ventana de login
 # Donde nos pedirán un usuario y una contraseña
 # Para poder acceder a la aplicación
@@ -21,6 +20,8 @@ from main import addUser
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        p = QProcess()
+        p.start("pip3 install -r requirements.txt")
         self.interfaz = uic.loadUi("ui/Login.ui")
         self.BDatos = BD.Base()
         if os.path.isfile("bd/Parkinson.db"):

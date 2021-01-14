@@ -1,4 +1,8 @@
 import sys
+import os
+
+import pathlib
+from pathlib import Path
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import (
     QDialog,
@@ -10,8 +14,10 @@ from PyQt5.QtWidgets import (
     QSpinBox
 )
 
-sys.path.append( '.' )
-from main import BD
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+from main import BD,Pacientes,PacientesPruebaGrafica2,addUser
 
 class addPaciente(QDialog):
     def __init__(self):
@@ -32,13 +38,19 @@ class addPaciente(QDialog):
         ldatos = QFormLayout()
         self.lnombre = QLabel("Nombre:")
         self.enombre = QLineEdit()
+        self.ldni = QLabel("DNI:")
+        self.edni = QLineEdit()
         self.ledad = QLabel("Edad:")
         self.sedad = QSpinBox()
-        self.lgravedad = QLabel("Gravedad:")
-        self.egravedad = QLineEdit()
+        self.laltura = QLabel("Altura:")
+        self.ealtura = QLineEdit()
+        self.lpeso = QLabel("Peso:")
+        self.epeso = QLineEdit()
         ldatos.addRow(self.lnombre,self.enombre)
+        ldatos.addRow(self.ldni,self.edni)
         ldatos.addRow(self.ledad,self.sedad)
-        ldatos.addRow(self.lgravedad,self.egravedad)
+        ldatos.addRow(self.laltura,self.ealtura)
+        ldatos.addRow(self.lpeso,self.epeso)
         vBox = QVBoxLayout()
         vBox.addWidget(bTrue)
         vBox.addWidget(self.lInvalidUser)
@@ -50,11 +62,10 @@ class addPaciente(QDialog):
         # Si cliquem el botó considerem l'usuari vàlid i tanquem el dialeg
         nombre = self.enombre.text()
         edad = self.sedad.text()
-        gravedad = self.egravedad.text()
-        print(nombre)
-        print(edad)
-        print(gravedad)
-        self.BDatos.sql_InsertarPaciente(nombre,edad,gravedad)
+        dni = self.edni.text()
+        peso = self.epeso.text()
+        altura = self.ealtura.text()
+        self.BDatos.sql_InsertarPaciente(nombre,edad,dni,peso,altura)
         self.close()
 
 class addUser(QDialog):
@@ -161,4 +172,63 @@ class ModificarPaciente(QDialog):
     def bFalseClicked(self):
         # No guardem
         self.close()
+class ClasificacionPaciente(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.BDatos = BD.Base()
+        datos=self.BDatos.sql_getClasificacion()
+        self.min1=str(datos[0][0])
+        self.max1=str(datos[1][0])
+        self.min2=str(datos[0][1])
+        self.max2=str(datos[1][1])
+        self.min3=str(datos[0][2])
+        self.max3=str(datos[1][2])
+        self.min4=str(datos[0][3])
+        self.max4=str(datos[1][3])
+        self.setWindowTitle("Clasificacion por vuelta")
+        self.setWindowModality(Qt.ApplicationModal)
+        self.setAttribute(Qt.WA_DeleteOnClose)
+
+        bFalse = QPushButton("Cancelar")
+        bFalse.clicked.connect(self.bFalseClicked)
+
+        bTrue = QPushButton("Confirmar")
+        bTrue.clicked.connect(self.bTrueClicked)
+        
+        lprincipal = QVBoxLayout()
+        ldatos = QFormLayout()
+        self.lemin1 = QLineEdit()
+        self.lemin1.setText(self.min1)
+        self.lemax1 = QLineEdit()
+        self.lemax1.setText(self.max1)
+        self.lemin2 = QLineEdit()
+        self.lemin2.setText(self.min2)
+        self.lemax2 = QLineEdit()
+        self.lemax2.setText(self.max2)
+        self.lemin3 = QLineEdit()
+        self.lemin3.setText(self.min3)
+        self.lemax3 = QLineEdit()
+        self.lemax3.setText(self.max3)
+        self.lemin4 = QLineEdit()
+        self.lemin4.setText(self.min4)
+        self.lemax4 = QLineEdit()
+        self.lemax4.setText(self.max4)
+        ldatos.addRow(self.lemin1,self.lemax1)
+        ldatos.addRow(self.lemin2,self.lemax2)
+        ldatos.addRow(self.lemin3,self.lemax3)
+        ldatos.addRow(self.lemin4,self.lemax4)
+        vBox = QVBoxLayout()
+        vBox.addWidget(bFalse)
+        vBox.addWidget(bTrue)
+        lprincipal.addLayout(ldatos)
+        lprincipal.addLayout(vBox)
+        self.setLayout(lprincipal)
+    def bTrueClicked(self):
+        # Si cliquem el botó considerem l'usuari vàlid i tanquem el dialeg
+        self.BDatos.sql_ActualizarPaciente(self.paciente,self.edad)
+        self.close()
+    def bFalseClicked(self):
+        # No guardem
+        self.close()
+
 

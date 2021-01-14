@@ -4,6 +4,8 @@ import hashlib
 import os
 
 from PyQt5 import uic
+import pathlib
+from pathlib import Path
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget, QMainWindow, QApplication,QListWidgetItem,QFrame,QListWidget,QDialog,QMessageBox,QLineEdit
 from PyQt5.QtGui import QKeySequence
@@ -12,10 +14,10 @@ from pathlib import Path
 
 import pyqtgraph as pg
 from pyqtgraph import PlotWidget, plot
-sys.path.append( '.' )
-from main import BD
-from main import CronoV2
-from main import addUser
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+from main import BD,Pacientes,PacientesPruebaGrafica2,addUser
 # Clase principal de la ventana de los pacientes
 # Que nos mostrara una lista de cada paciente y segun el paciente
 # Seleccionado nos mostrará sus datos y una gráfica con sus tiempos
@@ -34,6 +36,7 @@ class MainWindow(QMainWindow):
         self.interfaz.addPaciente.pressed.connect(self.BotonaddPaciente)
         self.interfaz.modificarPaciente.pressed.connect(self.Modificar)
         self.interfaz.eliminarPaciente.pressed.connect(self.Eliminar)
+        self.interfaz.editarClasificacion.pressed.connect(self.editar)
         #Creamos la capa de la grafica y activamos la opción de actualizar para que cuando
         #Cambiemos entre pacientes podamos actualizar sus datos
         self.graphWidget = pg.GraphicsWindow()
@@ -67,13 +70,16 @@ class MainWindow(QMainWindow):
             self.addUserDialog = addUser.ModificarPaciente(paciente,edad)
             self.addUserDialog.show()
             self.addUserDialog.exec_()
-            
     def Eliminar(self):
         nombre = self.interfaz.comboPacientes.currentText()
         self.addUserDialog = addUser.EliminarPaciente(nombre)
         self.addUserDialog.show()
         self.addUserDialog.exec_()
         self.listaPacientes()
+    def editar(self):
+        self.addUserDialog = addUser.ClasificacionPaciente()
+        self.addUserDialog.show()
+        self.addUserDialog.exec_()
     # Función conectada al boton para realizarle la prueba al paciente
     # Nos abrirá la ventana con la que cronometramos el tiempo que el paciente
     # Tardará en realizar el recorrido
@@ -85,7 +91,6 @@ class MainWindow(QMainWindow):
     # Nos habilitará los botones y llamará a la función que nos
     # Mostrará los datos del paciente
     def enableButtons(self):
-        
         if (self.interfaz.comboPacientes.currentText()=="Seleccionar paciente"):
             self.interfaz.modificarPaciente.setEnabled(False)
             self.interfaz.pruebaCrono.setEnabled(False)
@@ -119,11 +124,15 @@ class MainWindow(QMainWindow):
         self.BDatos.sql_MostrarGrafica(self.graphWidget,nombre)
         datos=self.BDatos.sql_getDatosPacientes(nombre)
         self.lePaciente.setText(datos[0][0])
+        self.leDNI.setText(datos[1][0])
         self.sbEdad.setValue(datos[2][0])
-        self.leGravedad.setText(str(datos[1][0]))
+        self.leAltura.setText(datos[3][0])
+        self.lePeso.setText(datos[4][0])
+        self.leGravedad.setText(str(datos[5][0]))
     def listaPacientes(self):
-        self.interfaz.comboPacientes.clear()
-        self.interfaz.comboPacientes.addItem("Seleccionar paciente")
-        self.lista_pacientes=self.BDatos.sql_getPacientes()
-        self.interfaz.comboPacientes.addItems(self.lista_pacientes)
-        self.interfaz.comboPacientes.currentTextChanged.connect(self.enableButtons)
+        if (self.interfaz.comboPacientes.count()==1):
+            self.interfaz.comboPacientes.clear()
+            self.interfaz.comboPacientes.addItem("Seleccionar paciente")
+            self.lista_pacientes=self.BDatos.sql_getPacientes()
+            self.interfaz.comboPacientes.addItems(self.lista_pacientes)
+            self.interfaz.comboPacientes.currentTextChanged.connect(self.enableButtons)

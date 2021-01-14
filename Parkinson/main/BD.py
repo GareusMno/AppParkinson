@@ -1,8 +1,10 @@
 import sqlite3
 import hashlib
 import os
+import sys
 
 from sqlite3 import Error
+import pathlib
 from pathlib import Path
 from dateutil import parser
 import matplotlib.pyplot as plt
@@ -15,6 +17,9 @@ import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 from main import Cifrar
 lienzo = 0
 comprobado = 0
@@ -45,13 +50,18 @@ class Base(object):
         cursorObj.execute('INSERT INTO Usuarios(usuario, password) VALUES("root", "dc76e9f0c0006e8f919e0c515c66dbba3982f785");')
         cursorObj.execute("CREATE TABLE Pacientes(codigo INTEGER PRIMARY KEY AUTOINCREMENT, paciente String not null, altura INTEGER, peso INTEGER, DNI String not null, gravedad String ,edad INTEGER);")
         cursorObj.execute("CREATE TABLE Pruebas(codigo INTEGER PRIMARY KEY AUTOINCREMENT, paciente String not null, lap1 INTEGER, lap2 INTEGER, lap3 INTEGER, TiempoTotal INTEGER ,fecha String, FOREIGN KEY(paciente) REFERENCES Pacientes(paciente) ON UPDATE CASCADE);")
+        cursorObj.execute("CREATE TABLE Clasificacion(segmento INTEGER PRIMARY KEY AUTOINCREMENT,t1 INTEGER,t2 INTEGER);")
+        cursorObj.execute("INSERT INTO Clasificacion(t1,t2) VALUES(17.16,23.56);")
+        cursorObj.execute("INSERT INTO Clasificacion(t1,t2) VALUES(15.14,25.90);")
+        cursorObj.execute("INSERT INTO Clasificacion(t1,t2) VALUES(10.43,13.34);")
+        cursorObj.execute("INSERT INTO Clasificacion(t1,t2) VALUES(41.91,60.32);")
         self.con.commit()
     # Función de insertar pacientes
     # Se ejecutará cuando queramos añadir nuevos pacientes
     # Nos pasarán los datos de cada paciente por parámetros y le haremos un insert a la base de datos
-    def sql_InsertarPaciente(self,paciente,gravedad,edad):
+    def sql_InsertarPaciente(self,paciente,edad,dni,peso,altura):
         cursorObj = self.con.cursor()
-        cursorObj.execute('INSERT INTO Pacientes(paciente,gravedad,edad) VALUES("'+paciente+'",'+gravedad+','+edad+');')
+        cursorObj.execute('INSERT INTO Pacientes(paciente,edad,DNI,peso,altura) VALUES("'+paciente+'",'+edad+',"'+dni+'",'+peso+','+altura+');')
         self.con.commit()
     # Función de eliminar pacientes
     # Se ejecutará cuando queramos eliminar un paciente
@@ -114,19 +124,30 @@ class Base(object):
         for paciente in item_0_in_result:
             Pacientes.append(paciente)
         return Pacientes
+    def sql_getClasificacion(self):
+        cursorObj=self.con.cursor()
+        cursorObj.execute(''' SELECT t1,t2 FROM Clasificacion ''')
+        results = cursorObj.fetchall()
+        Clasi=[]
+        Clasi.append([_[0] for _ in results])
+        Clasi.append([_[1] for _ in results])
+        return Clasi
+
     # Función para conseguir todos los datos de un paciente
     # Hara una petición para que nos devuelvan todos los datos
     # Devolverá una lista con los datos del paciente consultado
     def sql_getDatosPacientes(self,nombre):
         cursorObj=self.con.cursor()
-        cursorObj.execute(" SELECT paciente,gravedad,edad FROM Pacientes where paciente='"+nombre+"'" )
+        cursorObj.execute(" SELECT paciente,DNI,edad,altura,peso,gravedad FROM Pacientes where paciente='"+nombre+"'" )
         results=cursorObj.fetchall()
         Pacientes=[]
 
         Pacientes.append([_[0] for _ in results])
         Pacientes.append([_[1] for _ in results])
         Pacientes.append([_[2] for _ in results])
-
+        Pacientes.append([_[3] for _ in results])
+        Pacientes.append([_[4] for _ in results])
+        Pacientes.append([_[5] for _ in results])
         
         return Pacientes
     # Función para mostrar los tiempos
