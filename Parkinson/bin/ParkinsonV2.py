@@ -1,5 +1,6 @@
 import sys
 import os
+
 import sqlite3
 import hashlib
 import pathlib
@@ -20,9 +21,11 @@ from main import BD,Pacientes,PacientesPruebaGrafica2,addUser
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        cwd = os.getcwd()
+        print(cwd)
         p = QProcess()
         p.start("pip3 install -r requirements.txt")
-        self.interfaz = uic.loadUi("ui/Login.ui")
+        self.interfaz = uic.loadUi(".."+os.path.sep+"ui"+os.path.sep+"Login.ui")
         self.BDatos = BD.Base()
         if os.path.isfile("bd/Parkinson.db"):
             if (self.BDatos.sql_ComprobarTabla()==False):
