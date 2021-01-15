@@ -1,5 +1,5 @@
-import sys
 import os
+import sys
 
 import sqlite3
 import hashlib
@@ -24,14 +24,16 @@ class MainWindow(QMainWindow):
         cwd = os.getcwd()
         print(cwd)
         p = QProcess()
-        p.start("pip3 install -r requirements.txt")
-        self.interfaz = uic.loadUi(".."+os.path.sep+"ui"+os.path.sep+"Login.ui")
-        self.BDatos = BD.Base()
-        if os.path.isfile("bd/Parkinson.db"):
-            if (self.BDatos.sql_ComprobarTabla()==False):
-                self.BDatos.sql_CreateTable()
-        self.interfaz.Button.pressed.connect(self.iniciar)
-        self.interfaz.show()
+        p.start("pyp3 install -r requirements.txt")
+        print(p.state())
+        if (p.finished):
+            self.interfaz = uic.loadUi(".."+os.path.sep+"ui"+os.path.sep+"Login.ui")
+            self.BDatos = BD.Base()
+            if os.path.isfile("bd/Parkinson.db"):
+                if (self.BDatos.sql_ComprobarTabla()==False):
+                    self.BDatos.sql_CreateTable()
+            self.interfaz.Button.pressed.connect(self.iniciar)
+            self.interfaz.show()
     def iniciar(self):
         b=self.interfaz.UserText.text()
         c=self.interfaz.PassText.text()
