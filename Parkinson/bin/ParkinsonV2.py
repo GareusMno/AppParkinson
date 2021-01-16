@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
         cwd = os.getcwd()
         print(cwd)
         p = QProcess()
-        p.start("pyp3 install -r requirements.txt")
+        p.start("pip3 install requirements.txt")
         print(p.state())
         if (p.finished):
             self.interfaz = uic.loadUi(".."+os.path.sep+"ui"+os.path.sep+"Login.ui")
