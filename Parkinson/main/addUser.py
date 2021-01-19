@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (
 PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
-from main import BD,Pacientes,PacientesPruebaGrafica2,addUser
+from main import BD,PacientesPruebaGrafica2,addUser
 
 class addPaciente(QDialog):
     def __init__(self):
@@ -60,11 +60,11 @@ class addPaciente(QDialog):
 
     def bTrueClicked(self):
         # Si cliquem el botó considerem l'usuari vàlid i tanquem el dialeg
-        nombre = self.enombre.text()
-        edad = self.sedad.text()
-        dni = self.edni.text()
-        peso = self.epeso.text()
-        altura = self.ealtura.text()
+        nombre = str(self.enombre.text())
+        edad = str(self.sedad.text())
+        dni = str(self.edni.text())
+        peso = str(self.epeso.text())
+        altura = str(self.ealtura.text())
         self.BDatos.sql_InsertarPaciente(nombre,edad,dni,peso,altura)
         self.close()
 
@@ -89,6 +89,7 @@ class addUser(QDialog):
         self.enombre = QLineEdit()
         self.lcontraseña = QLabel("Contraseña:")
         self.econtraseña = QLineEdit()
+        self.econtraseña.setEchoMode(QLineEdit.Password)
         ldatos.addRow(self.lnombre,self.enombre)
         ldatos.addRow(self.lcontraseña,self.econtraseña)
         vBox = QVBoxLayout()
@@ -230,5 +231,30 @@ class ClasificacionPaciente(QDialog):
     def bFalseClicked(self):
         # No guardem
         self.close()
+class GuardarPrueba(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Modificar paciente")
+        self.setWindowModality(Qt.ApplicationModal)
+        self.setAttribute(Qt.WA_DeleteOnClose)
+
+        bTrue = QPushButton("Confirmar")
+        bTrue.clicked.connect(self.bTrueClicked)
+        
+        lprincipal = QVBoxLayout()
+        ldatos = QFormLayout()
+        self.confirmacion = QLabel()
+        self.confirmacion.setText("Prueba guardada!")
+        ldatos.addRow(self.confirmacion)
+        vBox = QVBoxLayout()
+        vBox.addWidget(bTrue)
+        lprincipal.addLayout(ldatos)
+        lprincipal.addLayout(vBox)
+        self.setLayout(lprincipal)
+    def bTrueClicked(self):
+        # Si cliquem el botó considerem l'usuari vàlid i tanquem el dialeg
+        self.close()
+
+
 
 

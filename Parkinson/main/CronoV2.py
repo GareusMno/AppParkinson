@@ -1,6 +1,8 @@
+import os
+import sys 
 import time
 import hashlib
-import sys 
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets,uic
 from PyQt5.QtWidgets import QWidget, QMainWindow, QApplication,QShortcut
@@ -9,9 +11,11 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
 from pathlib import Path
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
-from main import BD
-sys.path.append( '.' )
+from main import BD,addUser,PacientesPruebaGrafica2
 
 class MainWindow(QMainWindow):
     paciente=""
@@ -27,7 +31,7 @@ class MainWindow(QMainWindow):
         self.count = 0
         self.flag = False
         super().__init__(*args, **kwargs)
-        self.interfaz = uic.loadUi("ui/CronometroReal.ui", self)
+        self.interfaz = uic.loadUi("."+os.path.sep+"ui"+os.path.sep+"CronometroReal.ui", self)
         self.interfaz.Start.pressed.connect(self.estadoBotonCronometro)
         self.interfaz.Reset.pressed.connect(self.Re_set)
         self.interfaz.Guardar.pressed.connect(self.guardarTiempo)
@@ -51,7 +55,8 @@ class MainWindow(QMainWindow):
         elif(self.Start.text()=="Lap 3"):
             self.CalcularLap
             self.Start.setText("Start")
-            self.Tiempo_v_3.setText(self.Cronometro.text())
+            tiempo3 = float(self.Cronometro.text()) - float(self.Tiempo_v_2.text()) - float(self.Tiempo_v_1.text())
+            self.Tiempo_v_3.setText(str(tiempo3))
             self.pause()
         else:
             self.CalcularLap()
@@ -78,8 +83,8 @@ class MainWindow(QMainWindow):
         if (self.Tiempo_v_1.text()==""):
             self.Tiempo_v_1.setText(self.Cronometro.text())
         elif (self.Tiempo_v_2.text()==""):
-            self.Tiempo_v_2.setText(self.Cronometro.text())
-            
+            tiempo2 = float(self.Cronometro.text()) - float(self.Tiempo_v_1.text())
+            self.Tiempo_v_2.setText(str(tiempo2))
         self.lap=self.lap+1
     def Re_set(self): 
         # making flag to false 
@@ -96,7 +101,11 @@ class MainWindow(QMainWindow):
         # setting text to label 
         self.Cronometro.setText(str(self.count)) 
     def guardarTiempo(self):
-        self.BDatos.sql_GuardarPrueba(self.paciente,self.Cronometro.text())
+        self.BDatos.sql_GuardarPrueba(self.paciente,self.Tiempo_v_1.text(),self.Tiempo_v_2.text(),self.Tiempo_v_3.text(),self.Cronometro.text())
+        self.addUserDialog = addUser.GuardarPrueba()
+        self.addUserDialog.show()
+        self.addUserDialog.exec_()
+        PacientesPruebaGrafica2.MainWindow.datosPaciente(PacientesPruebaGrafica2)
     def showTime(self): 
         # checking if flag is true 
         if self.flag: 

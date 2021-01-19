@@ -26,9 +26,9 @@ comprobado = 0
 # Clase de la base de datos que al crearla y anos ofrecerá la conexion
 # Con la base de datos y nos permitira acceder a todas las funciones
 # Relacionadas con la base de datos
-class TimeAxisItem(pg.AxisItem):
-    def tickStrings(self, values, scale, spacing):
-        return [datetime.fromtimestamp(value) for value in values]
+#class TimeAxisItem(pg.AxisItem):
+#    def tickStrings(self, values, scale, spacing):
+#        return [datetime.fromtimestamp(value) for value in values]
 class Base(object):
     def __init__(self):
         self.con=""
@@ -48,7 +48,7 @@ class Base(object):
 
         cursorObj.execute("CREATE TABLE Usuarios(usuario String PRIMARY KEY not null default root, password String not null default root);")
         cursorObj.execute('INSERT INTO Usuarios(usuario, password) VALUES("root", "dc76e9f0c0006e8f919e0c515c66dbba3982f785");')
-        cursorObj.execute("CREATE TABLE Pacientes(codigo INTEGER PRIMARY KEY AUTOINCREMENT, paciente String not null, altura INTEGER, peso INTEGER, DNI String not null, gravedad String ,edad INTEGER);")
+        cursorObj.execute("CREATE TABLE Pacientes(codigo INTEGER PRIMARY KEY AUTOINCREMENT, paciente String not null, altura String, peso String, DNI String not null, gravedad String ,edad String);")
         cursorObj.execute("CREATE TABLE Pruebas(codigo INTEGER PRIMARY KEY AUTOINCREMENT, paciente String not null, lap1 INTEGER, lap2 INTEGER, lap3 INTEGER, TiempoTotal INTEGER ,fecha String, FOREIGN KEY(paciente) REFERENCES Pacientes(paciente) ON UPDATE CASCADE);")
         cursorObj.execute("CREATE TABLE Clasificacion(segmento INTEGER PRIMARY KEY AUTOINCREMENT,t1 INTEGER,t2 INTEGER);")
         cursorObj.execute("INSERT INTO Clasificacion(t1,t2) VALUES(17.16,23.56);")
@@ -160,30 +160,42 @@ class Base(object):
         cursorObj=self.con.cursor()
         cursorObj.execute("SELECT count(*) FROM Pruebas WHERE paciente='"+nombre+"'")
         if cursorObj.fetchone()[0]>1 :
-            cursorObj.execute("SELECT fecha,tiempo FROM Pruebas where paciente='"+nombre+"'")
+            cursorObj.execute("SELECT fecha,TiempoTotal,lap1,lap2,lap3 FROM Pruebas where paciente='"+nombre+"'")
             data=cursorObj.fetchall()
             dates = []
             values = []
+            lap1 = []
+            lap2 = []
+            lap3 = []
             for row in data:
                 dates.append((row[0]))
                 values.append((row[1]))
+                lap1.append((row[2]))
+                lap2.append((row[3]))
+                lap3.append((row[4]))
             grafica.clear()
             datesdict = dict(enumerate(dates))
-            stringaxis = pg.AxisItem(orientation="bottom")
-            stringaxis.setTicks([datesdict.items()])
-            plot = grafica.addPlot(axisItems={"bottom":stringaxis})
-            curve = plot.plot(list(datesdict.keys()),values)
+            grafica.addLegend()
+            grafica.showGrid(x=True,y=True)
+            #stringaxis = pg.AxisItem(orientation="bottom")
+            #stringaxis.setTicks([datesdict.items()])
+            #plot = grafica.addPlot(axisItems={"bottom":stringaxis})
+            #curve = plot.plot(list(datesdict.keys()),values)
+            grafica.plot(list(datesdict.keys()),values,name="Tiempo total",symbol="+",symbolSize=10,symbolBrush=("r"))
+            grafica.plot(list(datesdict.keys()),lap1,name="Segmento 1",symbol="+",symbolSize=10,symbolBrush=("b"))
+            grafica.plot(list(datesdict.keys()),lap2,name="Segmento 2",symbol="+",symbolSize=10,symbolBrush=("b"))
+            grafica.plot(list(datesdict.keys()),lap3,name="Segmento 3",symbol="+",symbolSize=10,symbolBrush=("b"))
             global lienzo 
             comprobado = 1
-            lienzo = plot
         else:
             comprobado = 0
     # Función para guardar los tiempos de la prueba
     # Se le pasará el nombre y el tiempo que ha tardado en realizar la prueba
     # Hará un insert a la base de datos con los datos y la fecha en la que se ha realizado el guardado
-    def sql_GuardarPrueba(self,paciente,tiempo):
+    def sql_GuardarPrueba(self,paciente,segmento1,segmento2,segmento3,total):
         cursorObj = self.con.cursor()
-        cursorObj.execute("INSERT INTO Pruebas(paciente,tiempo,fecha) VALUES('"+paciente+"',"+tiempo+",datetime('now','localtime'))")
+        cursorObj.execute("INSERT INTO Pruebas(paciente,lap1,lap2,lap3,TiempoTotal,fecha) VALUES('"+paciente+"',"+segmento1+","+segmento2+","+segmento3+","+total+",datetime('now','localtime'))")
+        print("Hola")
         self.con.commit()
     def sql_InsertarUsuario(self,nombre,contraseña):
         cursorObj = self.con.cursor()

@@ -13,7 +13,7 @@ from PyQt5.QtGui import QKeySequence
 PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
-from main import BD,Pacientes,PacientesPruebaGrafica2,addUser
+from main import BD,PacientesPruebaGrafica2,addUser
 # Clase principal de la ventana de login
 # Donde nos pedirán un usuario y una contraseña
 # Para poder acceder a la aplicación
@@ -22,14 +22,12 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         cwd = os.getcwd()
-        print(cwd)
         p = QProcess()
-        p.start("pip3 install requirements.txt")
-        print(p.state())
+        p.start("pip3 install -r requirements.txt")
         if (p.finished):
-            self.interfaz = uic.loadUi(".."+os.path.sep+"ui"+os.path.sep+"Login.ui")
+            self.interfaz = uic.loadUi("."+os.path.sep+"ui"+os.path.sep+"Login.ui")
             self.BDatos = BD.Base()
-            if os.path.isfile("bd/Parkinson.db"):
+            if os.path.isfile("."+os.path.sep+"bd"+os.path.sep+"Parkinson.db"):
                 if (self.BDatos.sql_ComprobarTabla()==False):
                     self.BDatos.sql_CreateTable()
             self.interfaz.Button.pressed.connect(self.iniciar)
