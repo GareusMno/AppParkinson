@@ -23,30 +23,30 @@ class MainWindow(QMainWindow):
              1:'null',
              2:'null',
     }
-    def __init__(self, *args, **kwargs):
-        self.BDatos = BD.Base()
+    def __init__(self,bd):
+        self.BDatos = BD.Base(bd)
+        print(bd)
         self.lap=1
         self.comienzo = 0
         self.tiempo = 0
         self.count = 0
         self.flag = False
-        super().__init__(*args, **kwargs)
-        self.interfaz = uic.loadUi("."+os.path.sep+"ui"+os.path.sep+"CronometroReal.ui", self)
+        super().__init__()
+        self.interfaz = uic.loadUi(".."+os.path.sep+"ui"+os.path.sep+"CronometroReal.ui", self)
         self.interfaz.Start.pressed.connect(self.estadoBotonCronometro)
         self.interfaz.Reset.pressed.connect(self.Re_set)
         self.interfaz.Guardar.pressed.connect(self.guardarTiempo)
         self.interfaz.nombre_paciente.setText(self.paciente)
         self.Cronometro.setFont(QFont('Arial', 25))
-        # creating a timer object 
+        # Creamos el qtimer y lo conectamos a la función en la que se irá actualizando con el tiempo indicando
         timer = QTimer(self.interfaz.VentanaCrono) 
-        # adding action to timer 
         timer.timeout.connect(self.showTime) 
-        # update the timer every tenth second 
         timer.start(50) 
         self.vez=0
         self.continuar=0
         self.interfaz.show()
-
+    # Función que nos permitirá según el texto del boton (estado)
+    # guardár el tiempo de cada segmento
     def estadoBotonCronometro(self):
         if (self.Start.text()=="Start"):
             self.Re_set()
@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         else:
             self.CalcularLap()
             self.Start.setText("Lap %d" % self.lap)
-
+    # Función que inicia el cronómetro y donde calculamos los tiempos 
     def start(self):
         # making flag to true
             if (self.vez==0):
@@ -72,12 +72,13 @@ class MainWindow(QMainWindow):
                 self.vez=1
                 self.continuar = time.perf_counter()-self.pausado+self.continuar
                 self.flag = True
-                
+    # Función que pausará el cronómetro cuando se acaben las vueltas
     def pause(self): 
         self.flag = False
         self.pausado = time.perf_counter()
         self.vez=2
-        
+    # Función que nos añadirá los tiempos según vamos cambiando de segmento
+    # Para poder ver los tiempos guardados según está funcionando
     def CalcularLap(self):
         self.laps[self.lap]=self.Cronometro.text()
         if (self.Tiempo_v_1.text()==""):
@@ -86,20 +87,25 @@ class MainWindow(QMainWindow):
             tiempo2 = float(self.Cronometro.text()) - float(self.Tiempo_v_1.text())
             self.Tiempo_v_2.setText(str(tiempo2))
         self.lap=self.lap+1
+    # Función que volverá todos los valores a su estado inicial
+    # Para poder repetir la prueba
     def Re_set(self): 
         # making flag to false 
         self.flag = False
         self.vez=0
         self.continuar=0
-        # reseeting the count 
         self.count = 0
         self.lap=1
         self.interfaz.Start.setText("Start")
         self.Tiempo_v_1.setText("")
         self.Tiempo_v_2.setText("")
         self.Tiempo_v_3.setText("")
-        # setting text to label 
         self.Cronometro.setText(str(self.count)) 
+    # Función que nos permitirá enviar los datos de la vuelta
+    # A nuestra base de datos y que además
+    # Nos actualizará el paciente y cuando volvamos al paciente
+    # Nos indicará que grado de enfermedad tiene actualmente
+    # Según el tiempo total
     def guardarTiempo(self):
         total = float(self.Cronometro.text())
         self.BDatos.sql_GuardarPrueba(self.paciente,self.Tiempo_v_1.text(),self.Tiempo_v_2.text(),self.Tiempo_v_3.text(),self.Cronometro.text())
@@ -115,13 +121,9 @@ class MainWindow(QMainWindow):
         self.addUserDialog = addUser.GuardarPrueba()
         self.addUserDialog.show()
         self.addUserDialog.exec_()
+    # Función que nos enseña el tiempo total de la prueba según va avanzando
     def showTime(self): 
-        # checking if flag is true 
         if self.flag: 
-            # incrementing the counter 
             self.count=round(time.perf_counter()-(self.comienzo+self.continuar),2)
-            
-        # getting text from count 
         text = str(self.count) 
-        # showing text 
         self.Cronometro.setText(text) 

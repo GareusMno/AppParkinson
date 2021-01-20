@@ -22,10 +22,11 @@ from main import BD,PacientesPruebaGrafica2,addUser,CronoV2
 # Que nos mostrara una lista de cada paciente y segun el paciente
 # Seleccionado nos mostrará sus datos y una gráfica con sus tiempos
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self,bd):
         super().__init__()
         # Cargamos la interfaz creada con QTDesigner 
-        self.interfaz = uic.loadUi("."+os.path.sep+"ui"+os.path.sep+"Pacientes.ui", self)
+        self.BDActual = bd
+        self.interfaz = uic.loadUi(".."+os.path.sep+"ui"+os.path.sep+"Pacientes.ui", self)
         #Creamos el objeto para trabar con la base de datos
         self.BDatos = BD.Base()
         #Conseguimos la lista de pacientes y la añadimos al combo box que cuando cambie de valor
@@ -38,6 +39,7 @@ class MainWindow(QMainWindow):
         self.interfaz.eliminarPaciente.pressed.connect(self.Eliminar)
         self.interfaz.editarClasificacion.pressed.connect(self.editar)
         self.interfaz.extraPaciente.pressed.connect(self.infoExtra)
+        self.interfaz.actualizarGrafica.pressed.connect(self.datosPaciente)
         #Creamos la capa de la grafica y activamos la opción de actualizar para que cuando
         #Cambiemos entre pacientes podamos actualizar sus datos
         #self.graphWidget = pg.GraphicsWindow()
@@ -59,26 +61,44 @@ class MainWindow(QMainWindow):
             self.leSIP.setEnabled(True)
             self.teMedicacion.setEnabled(True)
             self.comboPacientes.setEnabled(False)
-            
+
+            self.interfaz.addPaciente.setEnabled(False)
+            self.interfaz.eliminarPaciente.setEnabled(False)
+            self.interfaz.extraPaciente.setEnabled(False)
+            self.interfaz.pruebaCrono.setEnabled(False)
+            self.interfaz.editarClasificacion.setEnabled(False)
+            self.interfaz.actualizarGrafica.setEnabled(False)
         else:
             self.interfaz.modificarPaciente.setText("Modificar paciente")
             paciente=self.leNombre.text()
             self.comboPacientes.setEnabled(True)
+            self.interfaz.eliminarPaciente.setEnabled(True)
+            self.interfaz.extraPaciente.setEnabled(True)
+            self.interfaz.pruebaCrono.setEnabled(True)
+            self.interfaz.addPaciente.setEnabled(True)
+            self.interfaz.editarClasificacion.setEnabled(True)
+            self.interfaz.actualizarGrafica.setEnabled(True)
             self.leNombre.setEnabled(False)
             self.leApellido.setEnabled(False)
             self.leSIP.setEnabled(False)
             self.teMedicacion.setEnabled(False)
             nombre = self.interfaz.comboPacientes.currentText()
-            self.addUserDialog = addUser.ModificarPaciente(nombre,self.leNombre.text())
+            self.addUserDialog = addUser.ModificarPaciente(nombre,self.leNombre.text(),self.leApellido.text(),self.leSIP.text(),self.teMedicacion.toPlainText())
             self.addUserDialog.show()
             self.addUserDialog.exec_()
+            self.listaPacientes()
+    #
+    #Función para eliminar al paciente seleccionado y actualiza la lista
+    #
     def Eliminar(self):
         nombre = self.interfaz.comboPacientes.currentText()
         self.addUserDialog = addUser.EliminarPaciente(nombre)
         self.addUserDialog.show()
         self.addUserDialog.exec_()
-        print("Prueba")
         self.listaPacientes()
+    #
+    #Función para abrir la ventana de la clasificación de los pacientes
+    #
     def editar(self):
         self.addUserDialog = addUser.ClasificacionPaciente()
         self.addUserDialog.show()
@@ -88,7 +108,7 @@ class MainWindow(QMainWindow):
     # Tardará en realizar el recorrido
     def RealizarPrueba(self):
         CronoV2.MainWindow.paciente=self.interfaz.comboPacientes.currentText()
-        self.añadirPrueba = CronoV2.MainWindow()
+        self.añadirPrueba = CronoV2.MainWindow(self.BDActual)
         self.añadirPrueba.show()
         self.datosPaciente()
     # Funcion conectada con el combo box
@@ -101,6 +121,7 @@ class MainWindow(QMainWindow):
             self.interfaz.pruebaCrono.setEnabled(False)
             self.interfaz.eliminarPaciente.setEnabled(False)
             self.interfaz.extraPaciente.setEnabled(False)
+            self.interfaz.actualizarGrafica.setEnabled(False)
             self.leNombre.setText("")
             self.leApellido.setText("")
             self.leSIP.setText("")
@@ -117,6 +138,7 @@ class MainWindow(QMainWindow):
             self.interfaz.pruebaCrono.setEnabled(True)
             self.interfaz.eliminarPaciente.setEnabled(True)
             self.interfaz.extraPaciente.setEnabled(True)
+            self.interfaz.actualizarGrafica.setEnabled(True)
             self.datosPaciente()
     #
     # Funcion conectada con el boton de añadir paciente
@@ -140,12 +162,19 @@ class MainWindow(QMainWindow):
         self.leIngresado.setText(str(datos[3][0]))
         self.leGravedad.setText(str(datos[4][0]))
         self.teMedicacion.setText(str(datos[5][0]))
+    #
+    #Función que llenará los campos de la combobox con los nombres de los pacientes
+    #
     def listaPacientes(self):
         self.interfaz.comboPacientes.clear()
         self.interfaz.comboPacientes.addItem("Seleccionar paciente")
         self.lista_pacientes=self.BDatos.sql_getPacientes()
         self.interfaz.comboPacientes.addItems(self.lista_pacientes)
         self.interfaz.comboPacientes.currentTextChanged.connect(self.enableButtons)
+    #
+    # Función que nos mostrará una ventana con los datos extra del paciente que no son
+    # mostrados en la ventana principal
+    #
     def infoExtra(self):
         nombre = self.interfaz.comboPacientes.currentText()
         self.addUserDialog = addUser.ExtraPaciente(nombre)

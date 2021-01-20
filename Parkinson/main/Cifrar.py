@@ -1,5 +1,7 @@
 import hashlib
-
+#
+#Cifra la el texto que le pases y te lo devuelve codificado
+#
 class Cifrar():
     def __init__(self):
         self.prueba=""

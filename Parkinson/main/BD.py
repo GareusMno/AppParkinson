@@ -78,18 +78,24 @@ class Base(object):
     # Función de actualizar pacientes
     # Se ejecutará cuando modifiquemos un paciente
     # Que hara un update según los datos actualizados que le serán pasados por parámetros
-    def sql_ActualizarPaciente(self,noriginal,nombre):
+    def sql_ActualizarPaciente(self,noriginal,nombre,apellido,SIP,medicacion):
         cursorObj = self.con.cursor()
         cursorObj.execute("SELECT codigo FROM Pacientes where nombre='"+noriginal+"'")
         codigos = cursorObj.fetchall()
         codigo = [_[0] for _ in codigos]
-        print(codigo)
-        cursorObj.execute("UPDATE Pacientes SET nombre='"+nombre+"' where codigo='"+str(codigo)+"';")
+        print(codigo[0])
+        cursorObj.execute("UPDATE Pacientes SET nombre='"+nombre+"',apellido='"+apellido+"',SIP='"+SIP+"',medicacion='"+medicacion+"' where codigo="+str(codigo[0])+";")
         self.con.commit()
+    #
+    #Función que actualizará la gravedad del paciente según el resultado de la prueba
+    #
     def sql_ActualizarGravedad(self,paciente,gravedad):
         cursorObj = self.con.cursor()
         cursorObj.execute("UPDATE Pacientes SET gravedad='"+gravedad+"' where nombre='"+paciente+"';")
         self.con.commit()
+    #
+    #Función que actualizará la clasificación de las pruebas si las modificamos
+    #
     def sql_ActualizarClasificacion(self,seg1a,seg1b,seg2a,seg2b,seg3a,seg3b,seg4a,seg4b):
         cursorObj = self.con.cursor()
         cursorObj.execute("UPDATE Clasificacion SET t1='"+seg1a+"',t2='"+seg1b+"' where segmento=1;")
@@ -143,6 +149,10 @@ class Base(object):
         for paciente in item_0_in_result:
             Pacientes.append(paciente)
         return Pacientes
+    #
+    #Función que nos dará las los tiempos de cada segmento y el total que se usará
+    #Para identificar la gravedad del paciente
+    #
     def sql_getClasificacion(self):
         cursorObj=self.con.cursor()
         cursorObj.execute(''' SELECT t1,t2 FROM Clasificacion ''')
@@ -196,10 +206,6 @@ class Base(object):
             datesdict = dict(enumerate(dates))
             grafica.addLegend()
             grafica.showGrid(x=True,y=True)
-            #stringaxis = pg.AxisItem(orientation="bottom")
-            #stringaxis.setTicks([datesdict.items()])
-            #plot = grafica.addPlot(axisItems={"bottom":stringaxis})
-            #curve = plot.plot(list(datesdict.keys()),values)
             grafica.plot(list(datesdict.keys()),values,name="Tiempo total",symbol="+",symbolSize=10,symbolBrush=("r"))
             grafica.plot(list(datesdict.keys()),lap1,name="Segmento 1",symbol="+",symbolSize=10,symbolBrush=("b"))
             grafica.plot(list(datesdict.keys()),lap2,name="Segmento 2",symbol="+",symbolSize=10,symbolBrush=("b"))
@@ -216,11 +222,18 @@ class Base(object):
         cursorObj.execute("INSERT INTO Pruebas(paciente,lap1,lap2,lap3,TiempoTotal,fecha) VALUES('"+paciente+"',"+segmento1+","+segmento2+","+segmento3+","+total+",datetime('now','localtime'))")
         print("Hola")
         self.con.commit()
+    #
+    #Función que usaremos para añadir un usuario válido que pueda acceder al programa
+    #
     def sql_InsertarUsuario(self,nombre,contraseña):
         cursorObj = self.con.cursor()
         ccifrada = Cifrar.Cifrar().CifrarTexto(contraseña)
         cursorObj.execute('INSERT INTO Usuarios(usuario,password) VALUES("'+nombre+'","'+ccifrada+'");')
         self.con.commit()
+    #
+    #Función que comprobará si existe algún usuario además del root
+    #Para que la primera vez que se inicie el programa nos permita añadir un usuario
+    #
     def sql_ComprobarUsuarioDoctor(self):
         existencia = False
         cursorObj = self.con.cursor()
@@ -230,6 +243,10 @@ class Base(object):
         else:
             existencia= False
         return existencia
+    #
+    #Función que nos devolverá la información del paciente que será mostrada cuando usemos el botón
+    #De más información
+    #
     def sql_getExtra(self,nombre):
         cursorObj=self.con.cursor()
         cursorObj.execute(" SELECT direccion,email,telefono,genero,fechaingreso,IMC,grasacorporal,altura,peso,DNI FROM Pacientes where nombre='"+nombre+"'" )
@@ -248,7 +265,10 @@ class Base(object):
         Pacientes.append([_[9] for _ in results])
         
         return Pacientes
-    def sql_ActualizarExtraPaciente(dni,direccion,correo,telefono,genero,IMC,grasacorporal,altura,peso):
+    #
+    #Función que actualizará la nueva información modificada del apartado de más información
+    #
+    def sql_ActualizarExtraPaciente(self,nombre,dni,direccion,correo,telefono,genero,IMC,grasacorporal,altura,peso):
         cursorObj = self.con.cursor()
-        cursorObj.execute("INSERT INTO Pacientes(paciente,lap1,lap2,lap3,TiempoTotal,fecha) VALUES('"+paciente+"',"+segmento1+","+segmento2+","+segmento3+","+total+",datetime('now','localtime'))")
-        
+        cursorObj.execute("UPDATE Pacientes SET DNI='"+dni+"',direccion='"+direccion+"',email='"+correo+"',Telefono='"+telefono+"',genero='"+genero+"',IMC='"+IMC+"',grasacorporal='"+grasacorporal+"',altura='"+peso+"',peso='"+peso+"' where nombre='"+nombre+"';")
+        self.con.commit()

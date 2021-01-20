@@ -23,94 +23,6 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 from main import BD,PacientesPruebaGrafica2,addUser
 
 class addPaciente(QDialog):
-    def __init__(self):
-        super().__init__()
-        self.BDatos = BD.Base()
-        self.setWindowTitle("Añadir paciente")
-        self.setWindowModality(Qt.ApplicationModal)
-        self.setAttribute(Qt.WA_DeleteOnClose)
-
-        bTrue = QPushButton("Guardar")
-
-        bTrue.clicked.connect(self.bTrueClicked)
-
-        self.lInvalidUser = QLabel("Usuari o contrasenya incorrectes")
-        self.lInvalidUser.setStyleSheet("QLabel{ color: red }")
-        self.lInvalidUser.setVisible(False)
-        lprincipal = QVBoxLayout()
-        ldatos = QFormLayout()
-        self.lNombre = QLabel("Nombre:")
-        self.leNombre = QLineEdit()
-        self.lApellido = QLabel("Apellidos:")
-        self.leApellido = QLineEdit()
-        self.lDNI = QLabel("DNI:")
-        self.leDNI = QLineEdit()
-        self.lDireccion = QLabel("Dirección:")
-        self.leDireccion = QLineEdit()
-        self.lTelefono = QLabel("Teléfono:")
-        self.leTelefono = QLineEdit()
-        self.lCorreo = QLabel("E-mail")
-        self.leCorreo = QLineEdit()
-        self.lEdad = QLabel("Fecha de nacimiento:")
-        self.dteEdad = QDateTimeEdit()
-        self.lAltura = QLabel("Altura:")
-        self.sbAltura = QDoubleSpinBox()
-        self.sbAltura.setMaximum(1000)
-        self.lPeso = QLabel("Peso:")
-        self.sbPeso = QDoubleSpinBox()
-        self.sbPeso.setMaximum(1000)
-        self.lGenero = QLabel("Género:")
-        self.cbGenero = QComboBox()
-        self.cbGenero.addItem("Seleccionar Género")
-        self.cbGenero.addItem("Másculino")
-        self.cbGenero.addItem("Femenino")
-        self.cbGenero.addItem("Otro")
-        self.lSIP= QLabel("SIP:")
-        self.leSIP = QLineEdit()
-        self.lIMC = QLabel("IMC:")
-        self.leIMC = QLineEdit()
-        self.lGrasa = QLabel("Grasa corportal:")
-        self.sbGrasa = QSpinBox()
-        self.sbGrasa.setMaximum(1000)
-        ldatos.addRow(self.lNombre,self.leNombre)
-        ldatos.addRow(self.lApellido,self.leApellido)
-        ldatos.addRow(self.lDNI,self.leDNI)
-        ldatos.addRow(self.lDireccion,self.leDireccion)
-        ldatos.addRow(self.lTelefono,self.leTelefono)
-        ldatos.addRow(self.lCorreo,self.leCorreo)
-        ldatos.addRow(self.lEdad,self.dteEdad)
-        ldatos.addRow(self.lAltura,self.sbAltura)
-        ldatos.addRow(self.lPeso,self.sbPeso)
-        ldatos.addRow(self.lGenero,self.cbGenero)
-        ldatos.addRow(self.lSIP,self.leSIP)
-        ldatos.addRow(self.lIMC,self.leIMC)
-        ldatos.addRow(self.lGrasa,self.sbGrasa)
-        vBox = QVBoxLayout()
-        vBox.addWidget(bTrue)
-        vBox.addWidget(self.lInvalidUser)
-        lprincipal.addLayout(ldatos)
-        lprincipal.addLayout(vBox)
-        self.setLayout(lprincipal)
-
-    def bTrueClicked(self):
-        # Si cliquem el botó considerem l'usuari vàlid i tanquem el dialeg
-        nombre = str(self.leNombre.text())
-        apellido = str(self.leApellido.text())
-        altura = str(self.sbAltura.value())
-        peso = str(self.sbPeso.value())
-        dni = str(self.leDNI.text())
-        direccion = str(self.leDireccion.text())
-        correo = str(self.leCorreo.text())
-        telefono = str(self.leTelefono.text())
-        SIP = str(self.leSIP.text())
-        edad = str(self.dteEdad.dateTime().toString())
-        genero = str(self.cbGenero.currentText())
-        IMC = str(self.leIMC.text())
-        grasacorporal = str(self.sbGrasa.value())
-        
-        self.BDatos.sql_InsertarPaciente(nombre,apellido,altura,peso,dni,direccion,correo,telefono,SIP,edad,genero,IMC,grasacorporal)
-        self.close()
-
 class addUser(QDialog):
     def __init__(self):
         super().__init__()
@@ -182,10 +94,13 @@ class EliminarPaciente(QDialog):
         # No guardem
         self.close()
 class ModificarPaciente(QDialog):
-    def __init__(self,noriginal,nombre):
+    def __init__(self,noriginal,nombre,apellido,sip,medicacion):
         super().__init__()
         self.paciente=noriginal
         self.nom=nombre
+        self.ape=apellido
+        self.SI= sip
+        self.med = medicacion
         self.BDatos = BD.Base()
         self.setWindowTitle("Modificar paciente")
         self.setWindowModality(Qt.ApplicationModal)
@@ -209,7 +124,7 @@ class ModificarPaciente(QDialog):
         self.setLayout(lprincipal)
     def bTrueClicked(self):
         # Si cliquem el botó considerem l'usuari vàlid i tanquem el dialeg
-        self.BDatos.sql_ActualizarPaciente(self.paciente,self.nom)
+        self.BDatos.sql_ActualizarPaciente(self.paciente,self.nom,self.ape,self.SI,self.med)
         self.close()
     def bFalseClicked(self):
         # No guardem
@@ -298,6 +213,7 @@ class ExtraPaciente(QDialog):
     def __init__(self,nombre):
         super().__init__()
         self.BDatos = BD.Base()
+        self.nom = nombre
         datos=self.BDatos.sql_getExtra(nombre)
         self.direccion=str(datos[0][0])
         self.email=str(datos[1][0])
@@ -395,13 +311,13 @@ class ExtraPaciente(QDialog):
         direccion = str(self.ledir.text())
         correo = str(self.leemail.text())
         telefono = str(self.letelefono.text())
-        genero = str(self.legenero.currentText())
+        genero = str(self.legenero.text())
         IMC = str(self.leimc.text())
-        grasacorporal = str(self.legrasa.value())
-        altura = str(self.lealtura.value())
-        peso = str(self.lepeso.value())
+        grasacorporal = str(self.legrasa.text())
+        altura = str(self.lealtura.text())
+        peso = str(self.lepeso.text())
 
-        self.BDatos.sql_ActualizarExtraPaciente(dni,direccion,correo,telefono,genero,IMC,grasacorporal,altura,peso)
+        self.BDatos.sql_ActualizarExtraPaciente(self.nom,dni,direccion,correo,telefono,genero,IMC,grasacorporal,altura,peso)
         self.close()
     def bFalseClicked(self):
         # No guardem

@@ -305,6 +305,22 @@
      <string>Más información</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="actualizarGrafica">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>460</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Actualizar gráfica</string>
+    </property>
+   </widget>
   </widget>
   <action name="actionA_adir">
    <property name="text">
