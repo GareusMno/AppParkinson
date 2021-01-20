@@ -1,3 +1,4 @@
 pyqtgraph
 matplotlib
-python-dateutil
+pyinstaller
+pyqt5

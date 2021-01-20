@@ -33,7 +33,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>140</y>
+      <y>70</y>
       <width>101</width>
       <height>41</height>
      </rect>
@@ -49,7 +49,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>260</y>
+      <y>190</y>
       <width>101</width>
       <height>41</height>
      </rect>
@@ -65,7 +65,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>200</y>
+      <y>130</y>
       <width>101</width>
       <height>41</height>
      </rect>
@@ -188,7 +188,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="lePaciente">
+          <widget class="QLineEdit" name="leNombre">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -201,84 +201,72 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="label_6">
+          <widget class="QLabel" name="label_10">
            <property name="text">
-            <string>DNI</string>
+            <string>Apellido</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="leDNI">
+          <widget class="QLineEdit" name="leApellido">
            <property name="enabled">
             <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="label_4">
+          <widget class="QLabel" name="label_9">
            <property name="text">
-            <string>Edad</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <string>SIP</string>
            </property>
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="QSpinBox" name="sbEdad">
+          <widget class="QLineEdit" name="leSIP">
            <property name="enabled">
             <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">color: rgb(0, 0, 0);</string>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="label_7">
            <property name="text">
-            <string>Altura</string>
+            <string>Nacimiento</string>
            </property>
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QLineEdit" name="leAltura">
+          <widget class="QLineEdit" name="leIngresado">
            <property name="enabled">
             <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="4" column="0">
-          <widget class="QLabel" name="label_7">
+          <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Peso</string>
+            <string>Gravedad</string>
            </property>
           </widget>
          </item>
          <item row="4" column="1">
-          <widget class="QLineEdit" name="lePeso">
+          <widget class="QLineEdit" name="leGravedad">
            <property name="enabled">
             <bool>false</bool>
            </property>
           </widget>
          </item>
          <item row="5" column="0">
-          <widget class="QLabel" name="label_5">
+          <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Gravedad</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <string>Medicación</string>
            </property>
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QLineEdit" name="leGravedad">
+          <widget class="QTextEdit" name="teMedicacion">
            <property name="enabled">
             <bool>false</bool>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">color: rgb(0, 0, 0);</string>
            </property>
           </widget>
          </item>
@@ -299,6 +287,22 @@
     </property>
     <property name="text">
      <string>Editar clasificacion</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="extraPaciente">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>250</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Más información</string>
     </property>
    </widget>
   </widget>

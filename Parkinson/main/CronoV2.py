@@ -101,11 +101,20 @@ class MainWindow(QMainWindow):
         # setting text to label 
         self.Cronometro.setText(str(self.count)) 
     def guardarTiempo(self):
+        total = float(self.Cronometro.text())
         self.BDatos.sql_GuardarPrueba(self.paciente,self.Tiempo_v_1.text(),self.Tiempo_v_2.text(),self.Tiempo_v_3.text(),self.Cronometro.text())
+        clasi = self.BDatos.sql_getClasificacion()
+        t1 = float(clasi[0][3])
+        t2 = float(clasi[1][3])
+        if (total < t1):
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Leve")
+        if (total >=t1 and total <t2):
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Moderada")
+        if (total >= t2):
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Grave")
         self.addUserDialog = addUser.GuardarPrueba()
         self.addUserDialog.show()
         self.addUserDialog.exec_()
-        PacientesPruebaGrafica2.MainWindow.datosPaciente(PacientesPruebaGrafica2)
     def showTime(self): 
         # checking if flag is true 
         if self.flag: 

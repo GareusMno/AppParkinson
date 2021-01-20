@@ -54,7 +54,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap>B:/Games/generatedtext_2.png</pixmap>
+        <pixmap>../img/Barc.png</pixmap>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -244,6 +244,41 @@
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuArchivo">
+    <property name="title">
+     <string>Archivo</string>
+    </property>
+    <addaction name="actionImportar"/>
+    <addaction name="actionExportar"/>
+    <addaction name="separator"/>
+    <addaction name="actionSeleccionar"/>
+   </widget>
+   <addaction name="menuArchivo"/>
+  </widget>
+  <action name="actionImportar">
+   <property name="text">
+    <string>Importar</string>
+   </property>
+  </action>
+  <action name="actionExportar">
+   <property name="text">
+    <string>Exportar</string>
+   </property>
+  </action>
+  <action name="actionSeleccionar">
+   <property name="text">
+    <string>Seleccionar</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
