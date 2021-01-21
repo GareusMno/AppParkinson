@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
             self.interfaz.close()
             # La primera vez de ejecución nos permitirá añadir un usuario extra
             if (self.BDatos.sql_ComprobarUsuarioDoctor()):
-                self.addUserDialog = addUser.addUser()
+                self.addUserDialog = addUser.adUser()
                 self.addUserDialog.show()
                 self.addUserDialog.exec_()
             PacientesPruebaGrafica2.MainWindow(self.Basededades).show()

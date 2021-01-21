@@ -23,6 +23,123 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 from main import BD,PacientesPruebaGrafica2,addUser
 
 class addPaciente(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Añadir paciente")
+        self.setWindowModality(Qt.ApplicationModal)
+        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.BDatos = BD.Base()
+
+        bFalse = QPushButton("Cancelar")
+        bFalse.clicked.connect(self.bFalseClicked)
+
+        bTrue = QPushButton("Confirmar")
+        bTrue.clicked.connect(self.bTrueClicked)
+        
+        lprincipal = QVBoxLayout()
+        ldatos = QFormLayout()
+        self.lnombre = QLabel()
+        self.lnombre.setText("Nombre:")
+        self.lenombre = QLineEdit()
+
+        self.lapellido = QLabel()
+        self.lapellido.setText("Apellido:")
+        self.leapellido = QLineEdit()
+
+        self.ldir = QLabel()
+        self.ldir.setText("Direccion:")
+        self.ledir = QLineEdit()
+
+        self.lemail = QLabel()
+        self.lemail.setText("Email:")
+        self.leemail = QLineEdit()
+
+        self.ltelefono = QLabel()
+        self.ltelefono.setText("Teléfono:")
+        self.letelefono = QLineEdit()
+
+        self.lsip = QLabel()
+        self.lsip.setText("SIP:")
+        self.lesip = QLineEdit()
+
+        self.lgenero = QLabel()
+        self.lgenero.setText("Genero:")
+        self.legenero = QComboBox()
+        self.legenero.addItem("Seleccionar género")
+        self.legenero.addItem("Masculino")
+        self.legenero.addItem("Femenino")
+        self.legenero.addItem("Otro")
+
+        self.ledad = QLabel()
+        self.ledad.setText("Nacimiento:")
+        self.leedad = QDateTimeEdit()
+
+        self.limc = QLabel()
+        self.limc.setText("IMC:")
+        self.leimc = QSpinBox()
+        self.leimc.setMaximum(1000)
+
+        self.lgrasa = QLabel()
+        self.lgrasa.setText("Grasa corporal:")
+        self.legrasa = QSpinBox()
+        self.legrasa.setMaximum(1000)
+
+        self.laltura = QLabel()
+        self.laltura.setText("Altura:")
+        self.lealtura = QSpinBox()
+        self.lealtura.setMaximum(1000)
+
+        self.lpeso = QLabel()
+        self.lpeso.setText("Peso:")
+        self.lepeso = QSpinBox()
+        self.lepeso.setMaximum(1000)
+
+        self.ldni = QLabel()
+        self.ldni.setText("DNI:")
+        self.ledni = QLineEdit()
+
+        ldatos.addRow(self.lnombre,self.lenombre)
+        ldatos.addRow(self.lapellido,self.leapellido)
+        ldatos.addRow(self.lsip,self.lesip)
+        ldatos.addRow(self.ldni,self.ledni)
+        ldatos.addRow(self.ldir,self.ledir)
+        ldatos.addRow(self.lemail,self.leemail)
+        ldatos.addRow(self.ltelefono,self.letelefono)
+        ldatos.addRow(self.lgenero,self.legenero)
+        ldatos.addRow(self.ledad,self.leedad)
+        ldatos.addRow(self.limc,self.leimc)
+        ldatos.addRow(self.lgrasa,self.legrasa)
+        ldatos.addRow(self.laltura,self.lealtura)
+        ldatos.addRow(self.lpeso,self.lepeso)
+        
+        vBox = QVBoxLayout()
+        vBox.addWidget(bFalse)
+        vBox.addWidget(bTrue)
+        lprincipal.addLayout(ldatos)
+        lprincipal.addLayout(vBox)
+        self.setLayout(lprincipal)
+    def bTrueClicked(self):
+        # Si cliquem el botó considerem l'usuari vàlid i tanquem el dialeg
+        nombre = str(self.lenombre.text())
+        apellido = str(self.leapellido.text())
+        dni = str(self.ledni.text())
+        direccion = str(self.ledir.text())
+        correo = str(self.leemail.text())
+        telefono = str(self.letelefono.text())
+        genero = str(self.legenero.currentText())
+        sip = str(self.lesip.text())
+        edad = str(self.leedad.dateTime().toString())
+        IMC = str(self.leimc.value())
+        grasacorporal = str(self.legrasa.value())
+        altura = str(self.lealtura.value())
+        peso = str(self.lepeso.value())
+
+        self.BDatos.sql_InsertarPaciente(nombre,apellido,altura,peso,dni,direccion,correo,telefono,sip,edad,genero,IMC,grasacorporal)
+        self.close()
+    def bFalseClicked(self):
+        # No guardem
+        self.close()
+
 class addUser(QDialog):
     def __init__(self):
         super().__init__()
