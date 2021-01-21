@@ -21,8 +21,6 @@ from main import BD,PacientesPruebaGrafica2,addUser
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        #Instalará los programas necesarios para la ejecución del programa
-        os.system("pip3 install -r "+".."+os.path.sep+"bin"+os.path.sep+"requirements.txt")
 
         #UI Cargada
         self.interfaz = uic.loadUi(".."+os.path.sep+"ui"+os.path.sep+"Login.ui")

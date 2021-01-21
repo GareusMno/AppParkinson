@@ -258,7 +258,6 @@
      <string>Archivo</string>
     </property>
     <addaction name="actionImportar"/>
-    <addaction name="actionExportar"/>
     <addaction name="separator"/>
     <addaction name="actionSeleccionar"/>
    </widget>
