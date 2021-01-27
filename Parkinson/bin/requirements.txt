@@ -1,3 +1,0 @@
-pyqtgraph
-matplotlib
-pyqt5
