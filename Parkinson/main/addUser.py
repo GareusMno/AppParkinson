@@ -319,9 +319,9 @@ class ClasificacionPaciente(QDialog):
         # No guardem
         self.close()
 class GuardarPrueba(QDialog):
-    def __init__(self,total):
+    def __init__(self,total,s1,s2,s3):
         super().__init__()
-        self.setWindowTitle("Modificar paciente")
+        self.setWindowTitle("Guardar prueba")
         self.setWindowModality(Qt.ApplicationModal)
         self.setAttribute(Qt.WA_DeleteOnClose)
 
@@ -335,8 +335,30 @@ class GuardarPrueba(QDialog):
         self.letotal = QLineEdit()
         self.letotal.setEnabled(False)
         self.letotal.setText(total)
+
+        self.ls1 = QLabel()
+        self.ls1.setText("Segmento 1:")
+        self.les1 = QLineEdit()
+        self.les1.setEnabled(False)
+        self.les1.setText(s1)
+
+        self.ls2 = QLabel()
+        self.ls2.setText("Segmento 2:")
+        self.les2 = QLineEdit()
+        self.les2.setEnabled(False)
+        self.les2.setText(s2)
+
+        self.ls3 = QLabel()
+        self.ls3.setText("Segmento 3:")
+        self.les3 = QLineEdit()
+        self.les3.setEnabled(False)
+        self.les3.setText(s3)
+
         self.confirmacion = QLabel()
         self.confirmacion.setText("Prueba guardada!")
+        ldatos.addRow(self.ls1,self.les1)
+        ldatos.addRow(self.ls2,self.les2)
+        ldatos.addRow(self.ls3,self.les3)
         ldatos.addRow(self.ltotal,self.letotal)
         ldatos.addRow(self.confirmacion)
         vBox = QVBoxLayout()

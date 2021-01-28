@@ -110,19 +110,67 @@ class MainWindow(QMainWindow):
         total = float(self.Cronometro.text())
         self.BDatos.sql_GuardarPrueba(self.paciente,self.Tiempo_v_1.text(),self.Tiempo_v_2.text(),self.Tiempo_v_3.text(),self.Cronometro.text())
         clasi = self.BDatos.sql_getClasificacion()
-        t1 = float(clasi[0][3])
-        t2 = float(clasi[1][3])
+        t1s1 = float(clasi[0][0])
+        t2s1 = float(clasi[1][0])
+        t1s2 = float(clasi[0][1])
+        t2s2 = float(clasi[1][1])
+        t1s3 = float(clasi[0][2])
+        t2s3 = float(clasi[1][2])
+        t1total = float(clasi[0][3])
+        t2total = float(clasi[1][3])
         resultado=""
-        if (total < t1):
+        segmento1=""
+        segmento2=""
+        segmento3=""
+        #
+        # Calculando resultado total
+        #
+        if (total < t1total):
             resultado="Leve"
             self.BDatos.sql_ActualizarGravedad(self.paciente,"Leve")
-        if (total >=t1 and total <t2):
+        if (total >=t1total and total <t2total):
             resultado="Moderado"
             self.BDatos.sql_ActualizarGravedad(self.paciente,"Moderada")
-        if (total >= t2):
+        if (total >= t2total):
             resultado="Grave"
             self.BDatos.sql_ActualizarGravedad(self.paciente,"Grave")
-        self.addUserDialog = addUser.GuardarPrueba(resultado)
+        #
+        # Calculando resultado segmento 1
+        #
+        if (total < t1s1):
+            segmento1="Leve"
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Leve")
+        if (total >=t1s1 and total <t2s1):
+            segmento1="Moderado"
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Moderada")
+        if (total >= t2s1):
+            segmento1="Grave"
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Grave")
+        #
+        # Calculando resultado segmento 2
+        #
+        if (total < t1s2):
+            segmento2="Leve"
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Leve")
+        if (total >=t1s2 and total <t2s2):
+            segmento2="Moderado"
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Moderada")
+        if (total >= t2s2):
+            segmento2="Grave"
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Grave")
+        #
+        # Calculando resultado segmento 3
+        #
+        if (total < t1s3):
+            segmento3="Leve"
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Leve")
+        if (total >=t1s3 and total <t2s3):
+            segmento3="Moderado"
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Moderada")
+        if (total >= t2s3):
+            segmento3="Grave"
+            self.BDatos.sql_ActualizarGravedad(self.paciente,"Grave")
+        self.addUserDialog = addUser.GuardarPrueba(resultado,segmento1,segmento2,segmento3)
         self.addUserDialog.show()
         self.addUserDialog.exec_()
     # Función que nos enseña el tiempo total de la prueba según va avanzando
